@@ -77,10 +77,22 @@ always@(posedge sys_clk or negedge sys_rst_n)
     begin
         if (sys_rst_n == 1'b0)
             begin
-                per_frame_clken_r  <= 
-                per_frame_href_r   <= 
-                per_frame_vsync_r  <= 
+                per_frame_clken_r  <= 2'b0;
+                per_frame_href_r   <= 2'b0;
+                per_frame_vsync_r  <= 2'b0;
             end 
+        else
+            begin
+                per_frame_clken_r   <= {per_frame_clken_r [0], per_frame_clken };
+                per_frame_href_r    <= {per_frame_href_r  [0], per_frame_href  };
+                per_frame_vsync_r   <= {per_frame_vsync_r [0], per_frame_vsync };            
+            end
     end
+
+assign post_frame_vsync  = per_frame_vsync_r [1];
+assign post_frame_href   = per_frame_href_r  [1];
+assign post_frame_clken  = per_frame_clken_r [1];
+
+assign post_img_Bit = (post_frame_href == 1'b1) ? post_img_Bit_r : 1'b0;
 
 endmodule
