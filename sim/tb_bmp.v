@@ -338,12 +338,39 @@ wire			post_frame_href_B;
 
     
     .gray_data           (gray_data_B),   		//YCbCr pix data
-    .post_frame_clken    (post_frame_clken_B),    
-    .post_frame_vsync    (post_frame_vsync_B),    //Vertikale Synchronization signal for output image
-    .post_frame_href     (post_frame_href_B)      //Horizontal Synchronization signal for output image   
+    .post_frame_clken    (),    
+    .post_frame_vsync    (),    //Vertikale Synchronization signal for output image
+    .post_frame_href     ()      //Horizontal Synchronization signal for output image   
  
 );
 //
+wire post_img_Bit_out; 
+parameter  Diff_Threshold = 23'd580_000_0;
+
+frame_difference frame_difference_inst
+(
+    // system host
+    .sys_clk             (clk	),
+    .sys_rst_n           (rst_n	),
+
+    //input port for image data 
+    .per_frame_vsync     (cmos_vsync),
+    .per_frame_href      (cmos_href ),
+    .per_frame_clken     (cmos_clken),
+    .per_img_Y           (gray_data_A [23:16]),
+    //sdram port?
+    .YCbCr_img_Y_pre     (gray_data_B [23:16]),
+    
+    //output port for processed image data
+    .post_frame_vsync    (post_frame_vsync_B),
+    .post_frame_href     (post_frame_href_B ),
+    .post_frame_clken    (post_frame_clken_B),
+    .post_img_Bit        (post_img_Bit_out),
+
+    //user host
+    .Diff_Threshold      (Diff_Threshold)
+);
+
 wire 		vip_out_frame_vsync_A;   
 wire 		vip_out_frame_href_A ;   
 wire 		vip_out_frame_clken_A;
@@ -372,9 +399,9 @@ assign vip_out_img_R_A = gray_data_A [23:16];
 assign vip_out_img_G_A = gray_data_A [15:8]	;
 assign vip_out_img_B_A = gray_data_A [7:0]	;
 
-assign vip_out_img_R_B = gray_data_B [23:16];
-assign vip_out_img_G_B = gray_data_B [15:8]	;
-assign vip_out_img_B_B = gray_data_B [7:0]	;
+assign vip_out_img_R_B = {8{post_img_Bit_out}};
+assign vip_out_img_G_B = {8{post_img_Bit_out}};
+assign vip_out_img_B_B = {8{post_img_Bit_out}};
 
 reg [31:0] vip_cnt_A;
 
