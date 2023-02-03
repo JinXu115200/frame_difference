@@ -1,4 +1,4 @@
-module Frame_Difference 
+module frame_difference 
 (
     // system host
     input   wire            sys_clk             ,
