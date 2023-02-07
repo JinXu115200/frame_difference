@@ -345,7 +345,7 @@ wire			post_frame_href_B;
 );
 //
 wire post_img_Bit_out; 
-parameter  Diff_Threshold = 23'd580_000_0;
+parameter  Diff_Threshold = 8'd60;
 
 frame_difference frame_difference_inst
 (
